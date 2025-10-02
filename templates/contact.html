@@ -1,0 +1,410 @@
+<!doctype html>
+<html class="no-js" lang="zxx">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>Bladder Cancer Detection</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="static/css/bootstrap.min.css">
+    <link rel="stylesheet" href="static/css/owl.carousel.min.css">
+    <link rel="stylesheet" href="static/css/slicknav.css">
+    <link rel="stylesheet" href="static/css/flaticon.css">
+    <link rel="stylesheet" href="static/css/gijgo.css">
+    <link rel="stylesheet" href="static/css/animate.min.css">
+    <link rel="stylesheet" href="static/css/animated-headline.css">
+    <link rel="stylesheet" href="static/css/magnific-popup.css">
+    <link rel="stylesheet" href="static/css/fontawesome-all.min.css">
+    <link rel="stylesheet" href="static/css/themify-icons.css">
+    <link rel="stylesheet" href="static/css/slick.css">
+    <link rel="stylesheet" href="static/css/nice-select.css">
+    <link rel="stylesheet" href="static/css/style.css">
+
+    <style>
+        /* ================= Section Prediction ================= */
+        #prediction {
+            background-color: #ffffff; /* สีพื้นขาวเรียบ */
+            border-radius: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            padding: 40px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* ================= Floating Particles ================= */
+        .particle {
+            position: absolute;
+            border-radius: 50%;
+            pointer-events: none;
+            animation: floatParticle linear infinite;
+            transition: background-color 0.5s ease, opacity 0.5s ease, transform 1s cubic-bezier(0.65,0,0.35,1);
+        }
+        @keyframes floatParticle {
+            0% { transform: translateY(0) scale(1); opacity: 0.5; }
+            50% { opacity: 1; }
+            100% { transform: translateY(-800px) scale(1.5); opacity: 0; }
+        }
+
+        /* ================= Upload Form ================= */
+        #upload-form input[type="file"] {
+            border: 2px dashed #007bff;
+            padding: 30px;
+            background-color: white;
+            border-radius: 12px;
+            width: 100%;
+            display: block;
+            font-size: 15px;
+            transition: all 0.3s ease, box-shadow 0.3s ease;
+        }
+        #upload-form input[type="file"]:hover {
+            background-color: #e9ecef;
+            box-shadow: 0 0 10px #007bff, 0 0 20px #007bff55;
+            transform: scale(1.02);
+        }
+        #upload-form button {
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 5px #007bff;
+        }
+        #upload-form button:hover {
+            box-shadow: 0 0 15px #007bff, 0 0 30px #007bff55;
+            transform: scale(1.05);
+        }
+        #upload-form button::after {
+            content: "";
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            background: rgba(255,255,255,0.4);
+            border-radius: 50%;
+            pointer-events: none;
+            transform: scale(0);
+            opacity: 0;
+            transition: transform 0.6s, opacity 1s;
+        }
+        #upload-form button:active::after {
+            transform: scale(4);
+            opacity: 0;
+            transition: 0s;
+        }
+
+        /* ================= Preview Image ================= */
+        .preview-image {
+            width: 100%;
+            max-width: 400px;
+            margin-bottom: 10px;
+            border-radius: 10px;
+            border: 1px solid #ccc;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .preview-image:hover {
+            transform: scale(1.05) rotate(1deg);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+        }
+
+        /* ================= Prediction Result ================= */
+        #prediction-result {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid #dee2e6;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            margin-top: 20px;
+            text-align: center;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.5s ease;
+        }
+        #prediction-result.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* ================= Stage Labels ================= */
+        .stage-label {
+            font-weight: bold;
+            padding: 8px 15px;
+            border-radius: 8px;
+            display: inline-block;
+            margin: 5px 0;
+            font-size: 18px;
+            opacity: 0;
+            transform: scale(0.8);
+            transition: all 0.4s ease;
+        }
+        .stage-label.show {
+            opacity: 1;
+            transform: scale(1);
+        }
+        .stage-t1 { background-color: #28a745; color: white; }
+        .stage-t2 { background-color: #ffc107; color: white; }
+        .stage-t3 { background-color: #fd7e14; color: white; }
+        .stage-t4 { background-color: #dc3545; color: white; }
+
+        /* ================= Loading Spinner ================= */
+        #loading {
+            display: none;
+            text-align: center;
+            margin-top: 20px;
+        }
+        #loading .spinner-border {
+            width: 3rem;
+            height: 3rem;
+            animation: bounce 1s infinite;
+        }
+        @keyframes bounce {
+            0%,100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="header-area">
+        <div class="main-header header-sticky">
+            <div class="container-fluid">
+                <div class="row align-items-center">
+                    <div class="col-xl-2 col-lg-2 col-md-1">
+                        <div class="logo">
+                            <a href="index.html"><img src="" alt=""></a>
+                        </div>
+                    </div>
+                    <div class="col-xl-10 col-lg-10 col-md-10">
+                        <div class="menu-main d-flex align-items-center justify-content-end">
+                            <div class="main-menu f-right d-none d-lg-block">
+                                <nav>
+                                    <ul id="navigation">
+                                        <li><a href="index.html">Home</a></li>
+                                        <li><a href="contact.html">Prediction</a></li>
+                                    </ul>
+                                </nav>
+                            </div>
+                            <div class="header-right-btn f-right d-none d-lg-block ml-30">
+                                <a href="contact.html" class="btn header-btn">Enter the prediction</a>  
+                            </div>
+                        </div>
+                    </div>   
+                    <div class="col-12">
+                        <div class="mobile_menu d-block d-lg-none"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<main>
+    <section id="prediction" class="container my-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+
+                <!-- Title -->
+                <h1 class="text-center mb-4">TNM system - T staging</h1>
+
+                <!-- Image -->
+                <img src="static/img/hero/TNM system - T staging.png" class="text-center mb-4">
+
+                <!-- TNM Staging -->
+                <h1 class="mt-5 mb-3">Bladder Cancer TNM Staging (T1–T4)</h1>
+                <ul class="mb-5">
+                    <li><h4 class="mb-3">T1: Tumor invades the subepithelial connective tissue but does not invade the muscle layer.</h4></li>
+                    <li><h4 class="mb-3">T2: Tumor invades the muscle layer of the bladder wall.</h4></li>
+                    <li><h4 class="mb-3">T3: Tumor extends beyond the bladder muscle into perivesical fat.</h4></li>
+                    <li><h4 class="mb-3">T4: Tumor invades adjacent organs or structures outside the bladder.</h4></li>
+                </ul>
+
+                <!-- Upload Form -->
+                <h3 class="text-center mb-4">Upload MRI Image for Prediction</h3>
+                <form id="upload-form" enctype="multipart/form-data">
+                    <div class="form-group mb-3">
+                        <input type="file" name="file" accept="image/*" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block">Submit</button>
+                </form>
+
+                <!-- Loading -->
+                <div id="loading" style="display:none;" class="text-center mt-4">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="sr-only">Processing...</span>
+                    </div>
+                    <p class="mt-2">Processing... Please wait.</p>
+                </div>
+
+                <!-- Result -->
+                <div id="prediction-result" class="mt-4"></div>
+
+            </div>
+        </div>
+    </section>
+</main>
+
+
+
+
+<script>
+// ================= Particle Setup =================
+const predictionSection = document.getElementById("prediction");
+const particleCount = 30;
+const particles = [];
+const stageColors = { t1:"#28a745", t2:"#ffc107", t3:"#fd7e14", t4:"#dc3545" };
+let currentStage = "t1";
+let pulseInterval;
+
+// สร้าง particles
+for(let i=0;i<particleCount;i++){
+    const p = document.createElement("div");
+    p.className = "particle";
+    const size = Math.random()*8+4;
+    p.style.width = `${size}px`;
+    p.style.height = `${size}px`;
+    p.style.left = `${Math.random()*100}%`;
+    p.style.top = `${Math.random()*100 + 100}%`;
+    p.style.backgroundColor = stageColors[currentStage];
+    p.style.animationDuration = `${Math.random()*10 +10}s`;
+    p.style.animationDelay = `${Math.random()*10}s`;
+    predictionSection.appendChild(p);
+    particles.push(p);
+}
+
+// ================= Stage Pulse =================
+function setStage(stage){
+    currentStage = stage.toLowerCase();
+    if(stageColors[currentStage]){
+        if(pulseInterval) clearInterval(pulseInterval);
+        pulseInterval = setInterval(()=>{
+            particles.forEach(p=>{
+                const opacity = 0.3 + Math.random()*0.7;
+                p.style.backgroundColor = stageColors[currentStage];
+                p.style.opacity = opacity;
+            });
+        },300);
+    }
+}
+
+// ================= Particle Fly Bezier =================
+function flyParticlesBezier(){
+    const stageLabel = document.querySelector(".stage-label");
+    const previewImg = document.querySelector(".preview-image");
+    if(!stageLabel || !previewImg) return;
+
+    const containerRect = predictionSection.getBoundingClientRect();
+    const previewRect = previewImg.getBoundingClientRect();
+    const stageRect = stageLabel.getBoundingClientRect();
+
+    particles.forEach(p=>{
+        const startX = previewRect.left + Math.random()*previewRect.width - containerRect.left;
+        const startY = previewRect.top + Math.random()*previewRect.height - containerRect.top;
+        const endX = stageRect.left + Math.random()*stageRect.width - containerRect.left;
+        const endY = stageRect.top + Math.random()*stageRect.height - containerRect.top;
+        const cpX = startX + (endX-startX)/2 + (Math.random()*100-50);
+        const cpY = startY - 100 - Math.random()*50;
+
+        let progress = 0;
+        const duration = 1000 + Math.random()*500;
+        const startTime = performance.now();
+
+        function animate(time){
+            progress = (time-startTime)/duration;
+            if(progress>1) progress=1;
+            const x = Math.pow(1-progress,2)*startX + 2*(1-progress)*progress*cpX + Math.pow(progress,2)*endX;
+            const y = Math.pow(1-progress,2)*startY + 2*(1-progress)*progress*cpY + Math.pow(progress,2)*endY;
+            p.style.transform = `translate(${x}px,${y}px)`;
+            p.style.opacity = 1-progress;
+            if(progress<1) requestAnimationFrame(animate);
+            else { p.style.transform=''; p.style.opacity=1; }
+        }
+        requestAnimationFrame(animate);
+    });
+}
+
+// ================= Upload Form =================
+document.getElementById("upload-form").addEventListener("submit",async function(e){
+    e.preventDefault();
+    const fileInput = this.querySelector('input[name="file"]');
+    const file = fileInput.files[0];
+    if(!file) return;
+
+    const formData = new FormData();
+    formData.append("file",file);
+
+    const loading = document.getElementById("loading");
+    const result = document.getElementById("prediction-result");
+
+    loading.style.display = "block";
+    result.classList.remove("show");
+    result.innerHTML = "";
+
+    // Preview
+    const reader = new FileReader();
+    reader.onload = function(e){
+        const img = document.createElement("img");
+        img.src = e.target.result;
+        img.className = "preview-image";
+        result.appendChild(img);
+    }
+    reader.readAsDataURL(file);
+
+    try{
+        const response = await fetch("/contact.html",{method:"POST",body:formData});
+        const html = await response.text();
+
+        setTimeout(()=>{
+            result.innerHTML += html;
+            result.classList.add("show");
+
+            // Animate Stage Labels
+            const labels = result.querySelectorAll(".stage-label");
+            labels.forEach((label,i)=>{
+                setTimeout(()=>{label.classList.add("show");}, i*200);
+            });
+
+            // Set Stage Pulse + Particle Fly
+            const stageLabel = result.querySelector(".stage-label");
+            if(stageLabel){
+                const stageClass = Array.from(stageLabel.classList).find(c=>c.startsWith("stage-t"));
+                if(stageClass){
+                    const stage = stageClass.split("-")[1];
+                    setStage(stage);
+                    flyParticlesBezier();
+                }
+            }
+        },500);
+    }catch(err){
+        result.innerHTML += "<p style='color:red;'>เกิดข้อผิดพลาดในการประมวลผล</p>";
+        result.classList.add("show");
+    }finally{
+        loading.style.display="none";
+    }
+});
+</script>
+
+<!-- JS scripts -->
+<script src="static/js/vendor/modernizr-3.5.0.min.js"></script>
+<script src="static/js/vendor/jquery-1.12.4.min.js"></script>
+<script src="static/js/popper.min.js"></script>
+<script src="static/js/bootstrap.min.js"></script>
+<script src="static/js/jquery.slicknav.min.js"></script>
+<script src="static/js/owl.carousel.min.js"></script>
+<script src="static/js/slick.min.js"></script>
+<script src="static/js/wow.min.js"></script>
+<script src="static/js/animated.headline.js"></script>
+<script src="static/js/jquery.magnific-popup.js"></script>
+<script src="static/js/gijgo.min.js"></script>
+<script src="static/js/jquery.nice-select.min.js"></script>
+<script src="static/js/jquery.sticky.js"></script>
+<script src="static/js/jquery.counterup.min.js"></script>
+<script src="static/js/waypoints.min.js"></script>
+<script src="static/js/jquery.countdown.min.js"></script>
+<script src="static/js/contact.js"></script>
+<script src="static/js/jquery.form.js"></script>
+<script src="static/js/jquery.validate.min.js"></script>
+<script src="static/js/mail-script.js"></script>
+<script src="static/js/jquery.ajaxchimp.min.js"></script>
+<script src="static/js/plugins.js"></script>
+<script src="static/js/main.js"></script>
+
+</body>
+</html>
